@@ -14,11 +14,15 @@ class Deck {
       ([suite, number]) => new Card(suite, number)
     );
 
-    return new Deck(cards);
+    return new Deck(_.shuffle(cards));
   }
 
   getCards() {
     return this.cards.map(card => new Card(card.getSuite(), card.getNumber()));
+  }
+
+  take(numberOfCards) {
+    return this.cards.splice(0, numberOfCards);
   }
 }
 

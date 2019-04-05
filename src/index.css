@@ -9,3 +9,17 @@
   position: relative;
   top: -38px;
 }
+
+.pile {
+  display: flex;
+  flex-direction: column;
+}
+
+.tableau {
+  display: flex;
+  justify-content: space-between;
+}
+
+.game-container {
+  margin-top: 50px;
+}
