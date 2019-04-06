@@ -34,11 +34,20 @@ class CardView extends React.Component {
 
   render() {
     const style = { color: this.getColor() };
+    let className = 'card-container';
+    if (this.props.isSelected) {
+      className += ' selected-card';
+    }
     return (
-      <div className="card-container" style={style}>
-        <div className="card-content">
-          {String.fromCodePoint(this.getUnicode())}
-        </div>
+      <div
+        className={className}
+        style={style}
+        id={this.props.id}
+        onClick={this.props.onClick}
+      >
+        {/* <div className="card-content"> */}
+        {String.fromCodePoint(this.getUnicode())}
+        {/* </div> */}
       </div>
     );
   }

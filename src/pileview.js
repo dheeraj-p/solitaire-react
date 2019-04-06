@@ -8,7 +8,19 @@ class PileView extends React.Component {
 
   render() {
     const pile = this.props.pile;
-    const cardViews = pile.map(card => <CardView card={card} />);
+    const cardViews = pile.map(card => {
+      const id = card.getSuite() + '_' + card.getNumber();
+      const isSelected = id == this.props.lastSelectedCard;
+      return (
+        <CardView
+          card={card}
+          key={id}
+          id={id}
+          onClick={this.props.cardOnClick}
+          isSelected={isSelected}
+        />
+      );
+    });
     return <div className="pile">{cardViews}</div>;
   }
 }
