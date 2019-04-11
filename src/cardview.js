@@ -45,9 +45,7 @@ class CardView extends React.Component {
         id={this.props.id}
         onClick={this.props.onClick}
       >
-        {/* <div className="card-content"> */}
         {String.fromCodePoint(this.getUnicode())}
-        {/* </div> */}
       </div>
     );
   }

@@ -1,16 +1,51 @@
 import React from 'react';
 import Deck from './models/deck';
-import Game from './models/game';
+import _ from 'lodash';
 import PileView from './pileview';
+import Card from './models/card';
 
 class GameView extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { game: new Game(Deck.create()), lastSelectedCard: null };
+    this.state = { deck: Deck.create(), lastSelectedCard: null };
+  }
+
+  initializePiles() {
+    this.setState(state => {
+      const piles = new Array(7);
+      for (let pileNumber = 0; pileNumber < piles.length; pileNumber++) {
+        piles[pileNumber] = state.deck.take(pileNumber + 1);
+      }
+      return { ...state, piles };
+    });
+  }
+
+  componentWillMount() {
+    this.initializePiles();
   }
 
   isACardAlreadySelected() {
     return this.state.lastSelectedCard != null;
+  }
+
+  moveCards(targetId, lastSelectedCardId) {
+    const [targetCardSuite, targetCardRank, targetPileId] = targetId.split('_');
+    const [lastCardSuite, lastCardRank, lastPileId] = lastSelectedCardId.split(
+      '_'
+    );
+
+    const piles = [...this.state.piles];
+    const lastSelectedCardPile = piles[lastPileId];
+    const removedCards = _.remove(lastSelectedCardPile, card => {
+      return (
+        card.getSuite() == lastCardSuite && card.getNumber() == lastCardRank
+      );
+    });
+
+    const targetPile = piles[targetPileId];
+    piles[targetPileId] = targetPile.concat(removedCards);
+
+    return piles;
   }
 
   handleClick(event) {
@@ -18,8 +53,9 @@ class GameView extends React.Component {
 
     if (this.isACardAlreadySelected()) {
       const lastSelectedCardId = this.state.lastSelectedCard;
+      const pilesWithMovedCards = this.moveCards(targetId, lastSelectedCardId);
       this.setState(state => {
-        return { ...state, lastSelectedCard: null };
+        return { ...state, piles: pilesWithMovedCards, lastSelectedCard: null };
       });
       return;
     }
@@ -29,22 +65,22 @@ class GameView extends React.Component {
     });
   }
 
-  componentWillMount() {
-    this.state.game.initializePiles();
-  }
-
   render() {
-    const piles = this.state.game.getAllPiles();
+    const { piles } = this.state;
 
     return (
       <div className="tableau">
-        {piles.map(pile => (
-          <PileView
-            pile={pile}
-            cardOnClick={this.handleClick.bind(this)}
-            lastSelectedCard={this.state.lastSelectedCard}
-          />
-        ))}
+        {piles.map((pile, index) => {
+          return (
+            <PileView
+              pile={pile}
+              id={index}
+              key={index}
+              cardOnClick={this.handleClick.bind(this)}
+              lastSelectedCard={this.state.lastSelectedCard}
+            />
+          );
+        })}
       </div>
     );
   }
