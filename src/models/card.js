@@ -2,6 +2,7 @@ class Card {
   constructor(suite, number) {
     this.suite = suite;
     this.number = number;
+    this.opened = false;
   }
 
   getSuite() {
@@ -10,6 +11,14 @@ class Card {
 
   getNumber() {
     return this.number;
+  }
+
+  open() {
+    this.opened = true;
+  }
+
+  isOpened() {
+    return this.opened;
   }
 
   getColor() {

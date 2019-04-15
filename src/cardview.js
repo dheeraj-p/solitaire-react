@@ -7,6 +7,11 @@ class CardView extends React.Component {
   }
 
   getUnicode() {
+    const card = this.props.card;
+    if (!card.isOpened()) {
+      return 127136;
+    }
+
     const unicodes = {
       heart: 127152,
       spade: 127136,
@@ -14,7 +19,6 @@ class CardView extends React.Component {
       club: 127184
     };
 
-    const card = this.props.card;
     const cardNumber = card.getNumber();
     const cardUnicodeNumber = cardNumber > 11 ? cardNumber + 1 : cardNumber;
     const unicodeInDecimal = unicodes[card.getSuite()] + cardUnicodeNumber;
@@ -23,7 +27,10 @@ class CardView extends React.Component {
   }
 
   render() {
-    const style = { color: this.props.card.getColor() };
+    const card = this.props.card;
+    const color = card.isOpened() ? card.getColor() : 'black';
+    const cardOnclick = card.isOpened() ? this.props.onClick : null;
+    const style = { color };
     let className = 'card-container';
     if (this.props.isSelected) {
       className += ' selected-card';
@@ -33,7 +40,7 @@ class CardView extends React.Component {
         className={className}
         style={style}
         id={this.props.id}
-        onClick={this.props.onClick}
+        onClick={cardOnclick}
       >
         {String.fromCodePoint(this.getUnicode())}
       </div>

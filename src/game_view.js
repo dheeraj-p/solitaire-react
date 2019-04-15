@@ -3,7 +3,6 @@ import Deck from './models/deck';
 import _ from 'lodash';
 import PileView from './pileview';
 import Card from './models/card';
-import { read } from 'fs';
 
 class GameView extends React.Component {
   constructor(props) {
@@ -16,6 +15,8 @@ class GameView extends React.Component {
       const piles = new Array(7);
       for (let pileNumber = 0; pileNumber < piles.length; pileNumber++) {
         piles[pileNumber] = state.deck.take(pileNumber + 1);
+        const lastCard = _.takeRight(piles[pileNumber], 1)[0];
+        lastCard.open();
       }
       return { ...state, piles };
     });
