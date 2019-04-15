@@ -3,6 +3,7 @@ import Deck from './models/deck';
 import _ from 'lodash';
 import PileView from './pileview';
 import Card from './models/card';
+import { read } from 'fs';
 
 class GameView extends React.Component {
   constructor(props) {
@@ -28,6 +29,23 @@ class GameView extends React.Component {
     return this.state.lastSelectedCard != null;
   }
 
+  areOfDifferentColors(card1, card2) {
+    return card1.getColor() !== card2.getColor();
+  }
+
+  doesCardMatch(card, rankToMatchWith, suiteToMatchWith) {
+    return (
+      card.getSuite() == suiteToMatchWith && card.getNumber() == rankToMatchWith
+    );
+  }
+
+  isCardMoveable(targetCard, lastSelectedCard) {
+    return (
+      this.areOfDifferentColors(targetCard, lastSelectedCard) &&
+      targetCard.getNumber() == lastSelectedCard.getNumber() + 1
+    );
+  }
+
   moveCards(targetId, lastSelectedCardId) {
     const [targetCardSuite, targetCardRank, targetPileId] = targetId.split('_');
     const [lastCardSuite, lastCardRank, lastPileId] = lastSelectedCardId.split(
@@ -35,11 +53,22 @@ class GameView extends React.Component {
     );
 
     const piles = [...this.state.piles];
+
+    const targetCard = piles[targetPileId].find(card => {
+      return this.doesCardMatch(card, targetCardRank, targetCardSuite);
+    });
+
+    const lastSelectedCard = piles[lastPileId].find(card => {
+      return this.doesCardMatch(card, lastCardRank, lastCardSuite);
+    });
+
+    if (!this.isCardMoveable(targetCard, lastSelectedCard)) {
+      return piles;
+    }
+
     const lastSelectedCardPile = piles[lastPileId];
     const removedCards = _.remove(lastSelectedCardPile, card => {
-      return (
-        card.getSuite() == lastCardSuite && card.getNumber() == lastCardRank
-      );
+      return card.equals(lastSelectedCard);
     });
 
     const targetPile = piles[targetPileId];

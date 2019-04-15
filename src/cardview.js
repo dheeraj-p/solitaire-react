@@ -22,18 +22,8 @@ class CardView extends React.Component {
     return unicodeInDecimal;
   }
 
-  getColor() {
-    const suiteColors = {
-      heart: 'red',
-      spade: 'black',
-      diamond: 'red',
-      club: 'black'
-    };
-    return suiteColors[this.props.card.getSuite()];
-  }
-
   render() {
-    const style = { color: this.getColor() };
+    const style = { color: this.props.card.getColor() };
     let className = 'card-container';
     if (this.props.isSelected) {
       className += ' selected-card';

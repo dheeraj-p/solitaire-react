@@ -11,6 +11,20 @@ class Card {
   getNumber() {
     return this.number;
   }
+
+  getColor() {
+    const suiteColors = {
+      heart: 'red',
+      spade: 'black',
+      diamond: 'red',
+      club: 'black'
+    };
+    return suiteColors[this.suite];
+  }
+
+  equals(anotherCard) {
+    return this.number == anotherCard.number && this.suite == anotherCard.suite;
+  }
 }
 
 export default Card;
