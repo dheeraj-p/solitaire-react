@@ -6,8 +6,13 @@ class CardView extends React.Component {
     super(props);
   }
 
+  isNullCard() {
+    return this.props.card.getNumber() === 0;
+  }
+
   getUnicode() {
     const card = this.props.card;
+
     if (!card.isOpened()) {
       return 127136;
     }
@@ -28,13 +33,21 @@ class CardView extends React.Component {
 
   render() {
     const card = this.props.card;
-    const color = card.isOpened() ? card.getColor() : 'black';
-    const cardOnclick = card.isOpened() ? this.props.onClick : null;
+    let color = card.isOpened() ? card.getColor() : 'black';
+    let cardOnclick = card.isOpened() ? this.props.onClick : null;
     const style = { color };
     let className = 'card-container';
+
+    if (this.isNullCard()) {
+      className += ' null-card';
+      style.color = '#b1b1b1';
+      cardOnclick = this.props.onClick;
+    }
+
     if (this.props.isSelected) {
       className += ' selected-card';
     }
+
     return (
       <div
         className={className}

@@ -24,6 +24,11 @@ body {
   padding: 0px 3px 10px;
 }
 
+.null-card {
+  outline: 1px solid #202020;
+  background: #b1b1b1;
+}
+
 .card-container:hover {
   box-shadow: 0px 0px 3px 3px rgb(0, 132, 255);
   border: none;
@@ -32,6 +37,12 @@ body {
 .pile {
   display: flex;
   flex-direction: column;
+}
+
+.empty-pile {
+  height: 130px;
+  width: 100px;
+  background: skyblue;
 }
 
 .tableau {

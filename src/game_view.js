@@ -2,6 +2,7 @@ import React from 'react';
 import Deck from './models/deck';
 import _ from 'lodash';
 import PileView from './pileview';
+import Card from './models/card';
 
 class GameView extends React.Component {
   constructor(props) {
@@ -39,14 +40,21 @@ class GameView extends React.Component {
   }
 
   isCardMoveable(targetCard, lastSelectedCard) {
-    return (
+    const isAlternateCard =
       this.areOfDifferentColors(targetCard, lastSelectedCard) &&
-      targetCard.getNumber() == lastSelectedCard.getNumber() + 1
-    );
+      targetCard.getNumber() == lastSelectedCard.getNumber() + 1;
+
+    const isTargetANullCard = targetCard.getNumber() === 0;
+    const isLastCardKing = lastSelectedCard.getNumber() === 13;
+    const isKingOnEmptyPile = isTargetANullCard && isLastCardKing;
+    return isAlternateCard || isKingOnEmptyPile;
   }
 
   openLastCardOfPile(pile) {
     const lastCard = _.last(pile);
+    if (lastCard == undefined) {
+      return;
+    }
     lastCard.open();
   }
 
@@ -57,6 +65,11 @@ class GameView extends React.Component {
   removeCardsInPileFrom(card, pile) {
     const indexOfCard = this.getIndexOfCardInPile(card, pile);
     return _.remove(pile, (card, index) => index >= indexOfCard);
+  }
+
+  removeNullCard(cards) {
+    const nullCard = new Card('', 0);
+    _.remove(cards, card => card.equals(nullCard));
   }
 
   moveCards(targetId, lastSelectedCardId) {
@@ -75,17 +88,20 @@ class GameView extends React.Component {
       return this.doesCardMatch(card, lastCardRank, lastCardSuite);
     });
 
+    const lastSelectedCardPile = piles[lastPileId];
+    const targetPile = piles[targetPileId];
+
     if (!this.isCardMoveable(targetCard, lastSelectedCard)) {
       return piles;
     }
 
-    const lastSelectedCardPile = piles[lastPileId];
+    this.removeNullCard(targetPile);
+
     const removedCards = this.removeCardsInPileFrom(
       lastSelectedCard,
       lastSelectedCardPile
     );
 
-    const targetPile = piles[targetPileId];
     piles[targetPileId] = targetPile.concat(removedCards);
 
     this.openLastCardOfPile(lastSelectedCardPile);
