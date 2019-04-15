@@ -2,7 +2,6 @@ import React from 'react';
 import Deck from './models/deck';
 import _ from 'lodash';
 import PileView from './pileview';
-import Card from './models/card';
 
 class GameView extends React.Component {
   constructor(props) {
@@ -15,8 +14,7 @@ class GameView extends React.Component {
       const piles = new Array(7);
       for (let pileNumber = 0; pileNumber < piles.length; pileNumber++) {
         piles[pileNumber] = state.deck.take(pileNumber + 1);
-        const lastCard = _.takeRight(piles[pileNumber], 1)[0];
-        lastCard.open();
+        this.openLastCardOfPile(piles[pileNumber]);
       }
       return { ...state, piles };
     });
@@ -47,6 +45,11 @@ class GameView extends React.Component {
     );
   }
 
+  openLastCardOfPile(pile) {
+    const lastCard = _.last(pile);
+    lastCard.open();
+  }
+
   moveCards(targetId, lastSelectedCardId) {
     const [targetCardSuite, targetCardRank, targetPileId] = targetId.split('_');
     const [lastCardSuite, lastCardRank, lastPileId] = lastSelectedCardId.split(
@@ -75,6 +78,7 @@ class GameView extends React.Component {
     const targetPile = piles[targetPileId];
     piles[targetPileId] = targetPile.concat(removedCards);
 
+    this.openLastCardOfPile(lastSelectedCardPile);
     return piles;
   }
 
