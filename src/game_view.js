@@ -50,6 +50,15 @@ class GameView extends React.Component {
     lastCard.open();
   }
 
+  getIndexOfCardInPile(card, pile) {
+    return _.findIndex(pile, _card => card.equals(_card));
+  }
+
+  removeCardsInPileFrom(card, pile) {
+    const indexOfCard = this.getIndexOfCardInPile(card, pile);
+    return _.remove(pile, (card, index) => index >= indexOfCard);
+  }
+
   moveCards(targetId, lastSelectedCardId) {
     const [targetCardSuite, targetCardRank, targetPileId] = targetId.split('_');
     const [lastCardSuite, lastCardRank, lastPileId] = lastSelectedCardId.split(
@@ -71,9 +80,10 @@ class GameView extends React.Component {
     }
 
     const lastSelectedCardPile = piles[lastPileId];
-    const removedCards = _.remove(lastSelectedCardPile, card => {
-      return card.equals(lastSelectedCard);
-    });
+    const removedCards = this.removeCardsInPileFrom(
+      lastSelectedCard,
+      lastSelectedCardPile
+    );
 
     const targetPile = piles[targetPileId];
     piles[targetPileId] = targetPile.concat(removedCards);
