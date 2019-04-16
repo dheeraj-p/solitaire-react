@@ -28,6 +28,8 @@ class PileView extends React.Component {
           key={id}
           id={id}
           onClick={this.props.cardOnClick}
+          onClickClosesCard={null}
+          nullCardOnClick={this.props.cardOnClick}
           isSelected={isSelected}
         />
       );

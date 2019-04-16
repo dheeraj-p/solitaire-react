@@ -17,6 +17,10 @@ class Card {
     this.opened = true;
   }
 
+  close() {
+    this.opened = false;
+  }
+
   isOpened() {
     return this.opened;
   }

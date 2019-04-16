@@ -24,6 +24,10 @@ class Deck {
   take(numberOfCards) {
     return this.cards.splice(0, numberOfCards);
   }
+
+  takeAll() {
+    return this.cards.splice(0, this.cards.length);
+  }
 }
 
 export default Deck;

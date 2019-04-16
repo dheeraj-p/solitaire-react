@@ -34,14 +34,17 @@ class CardView extends React.Component {
   render() {
     const card = this.props.card;
     let color = card.isOpened() ? card.getColor() : 'black';
-    let cardOnclick = card.isOpened() ? this.props.onClick : null;
+    let cardOnclick = card.isOpened()
+      ? this.props.onClick
+      : this.props.onClickClosedCard;
+
     const style = { color };
     let className = 'card-container';
 
     if (this.isNullCard()) {
       className += ' null-card';
       style.color = '#b1b1b1';
-      cardOnclick = this.props.onClick;
+      cardOnclick = this.props.nullCardOnClick;
     }
 
     if (this.props.isSelected) {

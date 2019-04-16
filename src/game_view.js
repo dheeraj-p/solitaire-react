@@ -3,11 +3,16 @@ import Deck from './models/deck';
 import _ from 'lodash';
 import PileView from './pileview';
 import Card from './models/card';
+import WastePileView from './waste_pile_view';
 
 class GameView extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { deck: Deck.create(), lastSelectedCard: null };
+    this.state = {
+      deck: Deck.create(),
+      lastSelectedCard: null,
+      wastePileCards: { openedCards: [], closedCards: [] }
+    };
   }
 
   initializePiles() {
@@ -21,8 +26,21 @@ class GameView extends React.Component {
     });
   }
 
+  initializeWastePile() {
+    this.setState(state => {
+      const nullCard = new Card('', 0);
+      const openedCards = [nullCard];
+
+      let closedCards = [nullCard];
+      closedCards = closedCards.concat(state.deck.takeAll());
+
+      return { ...state, wastePileCards: { openedCards, closedCards } };
+    });
+  }
+
   componentWillMount() {
     this.initializePiles();
+    this.initializeWastePile();
   }
 
   isACardAlreadySelected() {
@@ -72,6 +90,24 @@ class GameView extends React.Component {
     _.remove(cards, card => card.equals(nullCard));
   }
 
+  isLastSelectedCardInWastePile() {
+    return this.state.lastSelectedCardSource == 'WASTE_PILE';
+  }
+
+  isNullCard(card) {
+    return card.getNumber() === 0;
+  }
+
+  moveCardFromWastePileTo(pile, card) {
+    const lastSelectedCard = _.last(this.state.wastePileCards.openedCards);
+
+    if (this.isCardMoveable(card, lastSelectedCard)) {
+      this.state.wastePileCards.openedCards.pop();
+      pile.push(lastSelectedCard);
+      this.removeNullCard(pile);
+    }
+  }
+
   moveCards(targetId, lastSelectedCardId) {
     const [targetCardSuite, targetCardRank, targetPileId] = targetId.split('_');
     const [lastCardSuite, lastCardRank, lastPileId] = lastSelectedCardId.split(
@@ -79,17 +115,21 @@ class GameView extends React.Component {
     );
 
     const piles = [...this.state.piles];
+    const lastSelectedCardPile = piles[lastPileId];
+    const targetPile = piles[targetPileId];
 
     const targetCard = piles[targetPileId].find(card => {
       return this.doesCardMatch(card, targetCardRank, targetCardSuite);
     });
 
+    if (this.isLastSelectedCardInWastePile()) {
+      this.moveCardFromWastePileTo(targetPile, targetCard);
+      return piles;
+    }
+
     const lastSelectedCard = piles[lastPileId].find(card => {
       return this.doesCardMatch(card, lastCardRank, lastCardSuite);
     });
-
-    const lastSelectedCardPile = piles[lastPileId];
-    const targetPile = piles[targetPileId];
 
     if (!this.isCardMoveable(targetCard, lastSelectedCard)) {
       return piles;
@@ -108,7 +148,7 @@ class GameView extends React.Component {
     return piles;
   }
 
-  handleClick(event) {
+  onClickTableauCard(event) {
     const targetId = event.target.id;
 
     if (this.isACardAlreadySelected()) {
@@ -121,7 +161,48 @@ class GameView extends React.Component {
     }
 
     this.setState(state => {
-      return { ...state, lastSelectedCard: targetId };
+      return {
+        ...state,
+        lastSelectedCard: targetId,
+        lastSelectedCardSource: 'TABLEAU_PILE'
+      };
+    });
+  }
+
+  onClickDeck() {
+    this.setState(state => {
+      const cardToOpen = state.wastePileCards.closedCards.pop();
+      cardToOpen.open();
+      state.wastePileCards.openedCards.push(cardToOpen);
+      console.log('Aa rha h');
+      return state;
+    });
+  }
+
+  onClickEmptyDeck() {
+    this.setState(state => {
+      const openedCards = state.wastePileCards.openedCards;
+      const closedCards = openedCards
+        .splice(1, openedCards.length)
+        .map(card => {
+          card.close();
+          return card;
+        })
+        .reverse();
+
+      state.wastePileCards.closedCards = state.wastePileCards.closedCards.concat(
+        closedCards
+      );
+
+      return state;
+    });
+  }
+
+  onClickedWastePileOpenedCard(event) {
+    this.setState({
+      ...this.state,
+      lastSelectedCard: event.target.id,
+      lastSelectedCardSource: 'WASTE_PILE'
     });
   }
 
@@ -129,18 +210,29 @@ class GameView extends React.Component {
     const { piles } = this.state;
 
     return (
-      <div className="tableau">
-        {piles.map((pile, index) => {
-          return (
-            <PileView
-              pile={pile}
-              id={index}
-              key={index}
-              cardOnClick={this.handleClick.bind(this)}
-              lastSelectedCard={this.state.lastSelectedCard}
-            />
-          );
-        })}
+      <div>
+        <WastePileView
+          cards={this.state.wastePileCards}
+          lastSelectedCard={this.state.lastSelectedCard}
+          onClickDeck={this.onClickDeck.bind(this)}
+          onClickEmptyDeck={this.onClickEmptyDeck.bind(this)}
+          onClickedWastePileOpenedCard={this.onClickedWastePileOpenedCard.bind(
+            this
+          )}
+        />
+        <div className="tableau">
+          {piles.map((pile, index) => {
+            return (
+              <PileView
+                pile={pile}
+                id={index}
+                key={index}
+                cardOnClick={this.onClickTableauCard.bind(this)}
+                lastSelectedCard={this.state.lastSelectedCard}
+              />
+            );
+          })}
+        </div>
       </div>
     );
   }
