@@ -43,7 +43,7 @@ class CardView extends React.Component {
 
     if (this.isNullCard()) {
       className += ' null-card';
-      style.color = '#b1b1b1';
+      style.color = '#055b45';
       cardOnclick = this.props.nullCardOnClick;
     }
 

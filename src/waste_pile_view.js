@@ -20,8 +20,8 @@ class WastePileView extends React.Component {
     const isSelected = lastOpenedCardId == this.props.lastSelectedCard;
 
     return (
-      <div style={{ display: 'flex', marginTop: '120px' }}>
-        <div>
+      <div style={{ display: 'flex', marginTop: '120px', marginLeft: '45px' }}>
+        <div style={{ marginRight: '10px' }}>
           <CardView
             card={lastClosedCard}
             onClickClosedCard={this.props.onClickDeck}

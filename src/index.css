@@ -1,5 +1,5 @@
 body {
-  background: rgb(11, 139, 107);
+  background: #0b8b6b;
 }
 
 .card-container {
@@ -25,8 +25,7 @@ body {
 }
 
 .null-card {
-  outline: 1px solid #202020;
-  background: #b1b1b1;
+  background: #055b45;
 }
 
 .card-container:hover {
