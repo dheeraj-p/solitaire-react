@@ -38,6 +38,18 @@ class Card {
   equals(anotherCard) {
     return this.number == anotherCard.number && this.suite == anotherCard.suite;
   }
+
+  isAce() {
+    return this.number == 1;
+  }
+
+  isNullCard() {
+    return this.number == 0;
+  }
+
+  isKing() {
+    return this.number == 13;
+  }
 }
 
 export default Card;

@@ -20,7 +20,7 @@ class WastePileView extends React.Component {
     const isSelected = lastOpenedCardId == this.props.lastSelectedCard;
 
     return (
-      <div style={{ display: 'flex', marginTop: '120px', marginLeft: '45px' }}>
+      <div style={{ display: 'flex', marginLeft: '45px' }}>
         <div style={{ marginRight: '10px' }}>
           <CardView
             card={lastClosedCard}
@@ -31,6 +31,7 @@ class WastePileView extends React.Component {
         <div>
           <CardView
             card={lastOpenedCard}
+            id={lastOpenedCardId}
             key={lastOpenedCardId}
             onClick={this.props.onClickedWastePileOpenedCard}
             nullCardOnClick={null}
